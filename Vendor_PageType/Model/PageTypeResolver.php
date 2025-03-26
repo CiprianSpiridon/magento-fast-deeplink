@@ -133,6 +133,7 @@ return new DataObject([
     ]);
 }
 
+// @TODO: i assume is_yalla_applied is a custom attribute. someone to confirm?
 return new DataObject([
 
                 'name' => $product->getName(),
