@@ -12,7 +12,7 @@
 >
 > **TODO**: Verify if `is_yalla_applied` is a custom product attribute in Magento. Current implementation assumes it exists and is a boolean value.
 
-## Installation
+## Installation 
 
 1. In your Magento installation, create the following directory structure:
    ```bash
