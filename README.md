@@ -29,6 +29,67 @@
    ```bash
    bin/magento setup:upgrade
    bin/magento cache:clean
+   bin/magento setup:di:compile
+   bin/magento cache:flush
+   ```
+
+## Troubleshooting
+
+### "Request does not match any route" Error
+
+If you receive this error after deploying:
+```json
+{
+    "message": "Request does not match any route.",
+    "trace": null
+}
+```
+
+Try the following solutions:
+
+1. Ensure the module is properly enabled:
+   ```bash
+   bin/magento module:status Vendor_PageType
+   ```
+   
+   If not enabled, run:
+   ```bash
+   bin/magento module:enable Vendor_PageType
+   bin/magento setup:upgrade
+   ```
+
+2. Verify that the webapi routes are properly registered:
+   ```bash
+   bin/magento setup:di:compile
+   bin/magento cache:clean config
+   bin/magento cache:flush
+   ```
+
+3. Check that you're using the correct endpoint URL:
+   ```
+   https://your-magento-domain/rest/V1/fast-deeplink?deeplink=https://www.example.com/path
+   ```
+
+4. Ensure the `Vendor_PageType/etc/webapi.xml` file is correctly configured:
+   ```xml
+   <?xml version="1.0"?>
+   <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi/etc/webapi.xsd">
+       <route url="/V1/fast-deeplink" method="GET">
+           <service class="Vendor\PageType\Api\PageTypeResolverInterface" method="resolve"/>
+           <resources>
+               <resource ref="anonymous"/>
+           </resources>
+       </route>
+   </routes>
+   ```
+   
+   Note: The route in webapi.xml should match the URL you're requesting. If you're seeing the error with `/rest/V1/fast-deeplink`, make sure the route is configured as `/V1/fast-deeplink` (without `/rest`).
+
+5. If all else fails, try redeploying static content:
+   ```bash
+   bin/magento setup:static-content:deploy -f
+   bin/magento indexer:reindex
+   bin/magento cache:flush
    ```
 
 ## Module Structure
